@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Morphing App</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #1a1a2e;
+            color: #e6e6e6;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #16213e;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #0f3460;
+        }
+        
+        h1 {
+            color: #4cc9f0;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #a9b7c6;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .upload-section {
+            background-color: #0f3460;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section-title {
+            color: #4cc9f0;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .image-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .upload-box {
+            border: 2px dashed #4cc9f0;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            flex-grow: 1;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .upload-box:hover {
+            background-color: rgba(76, 201, 240, 0.1);
+        }
+        
+        .upload-box img {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .preview-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .preview-box {
+            width: 48%;
+            text-align: center;
+        }
+        
+        .preview-box h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            color: #a9b7c6;
+        }
+        
+        .preview-img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            background-color: #1a1a2e;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .controls-section {
+            background-color: #0f3460;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a9b7c6;
+            font-weight: 500;
+        }
+        
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #1a1a2e;
+            border: 1px solid #4cc9f0;
+            border-radius: 5px;
+            color: #e6e6e6;
+            font-size: 1rem;
+        }
+        
+        input[type="number"]:focus, input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(76, 201, 240, 0.3);
+        }
+        
+        .dimensions-info {
+            background-color: rgba(26, 26, 46, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: #a9b7c6;
+            margin-top: 10px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 14px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .btn-primary {
+            background-color: #4cc9f0;
+            color: #16213e;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3db8dd;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #0f3460;
+            color: #e6e6e6;
+            border: 1px solid #4cc9f0;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #1a3f6e;
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn:disabled:hover {
+            transform: none;
+        }
+        
+        .output-section {
+            background-color: #0f3460;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .output-area {
+            text-align: center;
+            padding: 20px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .output-video {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid #2ecc71;
+        }
+        
+        .status-error {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+        
+        .status-processing {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border: 1px solid #3498db;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #1a1a2e;
+            border-radius: 5px;
+            margin-top: 15px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #4cc9f0;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .instructions {
+            background-color: #0f3460;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .instructions h3 {
+            color: #4cc9f0;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            color: #a9b7c6;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #a9b7c6;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #0f3460;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: #1a1a2e;
+            border: 1px solid #4cc9f0;
+            border-radius: 5px;
+            color: #e6e6e6;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(76, 201, 240, 0.3);
+        }
+        
+        .browser-warning {
+            background-color: rgba(243, 156, 18, 0.2);
+            color: #f39c12;
+            border: 1px solid #f39c12;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-instructions {
+            color: #a9b7c6;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Image Morphing App</h1>
+            <p class="subtitle">Upload two square images to create a smooth morphing animation video</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="upload-section">
+                <h2 class="section-title">Upload Images</h2>
+                <div class="image-upload">
+                    <!-- Start Image Upload -->
+                    <div class="upload-box" id="startUpload">
+                        <h3>Starting Image</h3>
+                        <p>Click to upload or drag & drop</p>
+                        <p class="upload-instructions">(JPG, PNG, GIF supported)</p>
+                        <img id="startPreview" src="" alt="Starting image preview">
+                        <input type="file" id="startFileInput" class="file-input" accept="image/*">
+                    </div>
+                    
+                    <!-- End Image Upload -->
+                    <div class="upload-box" id="endUpload">
+                        <h3>Ending Image</h3>
+                        <p>Click to upload or drag & drop</p>
+                        <p class="upload-instructions">(JPG, PNG, GIF supported)</p>
+                        <img id="endPreview" src="" alt="Ending image preview">
+                        <input type="file" id="endFileInput" class="file-input" accept="image/*">
+                    </div>
+                </div>
+                
+                <div class="preview-container">
+                    <div class="preview-box">
+                        <h3>Starting Image Preview</h3>
+                        <img id="startPreviewSmall" class="preview-img" src="" alt="Start preview">
+                    </div>
+                    <div class="preview-box">
+                        <h3>Ending Image Preview</h3>
+                        <img id="endPreviewSmall" class="preview-img" src="" alt="End preview">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls-section">
+                <h2 class="section-title">Morphing Settings</h2>
+                
+                <div class="form-group">
+                    <label for="duration">Duration (seconds)</label>
+                    <input type="number" id="duration" min="1" max="10" step="0.5" value="3">
+                </div>
+                
+                <div class="form-group">
+                    <label for="outputName">Output File Name</label>
+                    <input type="text" id="outputName" value="morph.mp4">
+                    <div class="dimensions-info">
+                        Output will be a video file (MP4 or WebM based on browser support)
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="resolution">Resolution (square)</label>
+                    <select id="resolution">
+                        <option value="256">256×256 pixels</option>
+                        <option value="512" selected>512×512 pixels</option>
+                        <option value="1024">1024×1024 pixels</option>
+                    </select>
+                    <div class="dimensions-info">
+                        Both images will be normalized to this size before morphing
+                    </div>
+                </div>
+                
+                <div class="browser-warning" id="browserWarning">
+                    <strong>Note:</strong> Video recording works best in Chrome, Edge, or Firefox.
+                </div>
+                
+                <div class="buttons">
+                    <button id="morphBtn" class="btn btn-primary">
+                        <span id="morphBtnText">Generate Morph Video</span>
+                    </button>
+                    <button id="resetBtn" class="btn btn-secondary">Reset All</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="output-section">
+            <h2 class="section-title">Output</h2>
+            <div class="output-area">
+                <video id="outputVideo" class="output-video" controls></video>
+                <div id="statusMessage" class="status-message"></div>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <a id="downloadLink" class="btn btn-primary hidden" style="margin-top: 20px; text-decoration: none;">Download Video</a>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>How to use this app:</h3>
+            <ul>
+                <li>Upload a starting square image and an ending square image (JPG or PNG format)</li>
+                <li>Adjust the morphing duration (default is 3 seconds)</li>
+                <li>Set the output file name (default is morph.mp4)</li>
+                <li>Click "Generate Morph Video" to create the animation</li>
+                <li>The app will normalize both images to the same square dimensions</li>
+                <li>Each pixel will gradually morph from the starting image to the ending image</li>
+                <li>Once complete, you can play the video and download it</li>
+            </ul>
+        </div>
+        
+        <footer>
+            <p>Image Morphing App | Uses HTML5 Canvas for pixel-based morphing | No external libraries required</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM elements
+        const startUpload = document.getElementById('startUpload');
+        const endUpload = document.getElementById('endUpload');
+        const startFileInput = document.getElementById('startFileInput');
+        const endFileInput = document.getElementById('endFileInput');
+        const startPreview = document.getElementById('startPreview');
+        const endPreview = document.getElementById('endPreview');
+        const startPreviewSmall = document.getElementById('startPreviewSmall');
+        const endPreviewSmall = document.getElementById('endPreviewSmall');
+        const durationInput = document.getElementById('duration');
+        const outputNameInput = document.getElementById('outputName');
+        const resolutionSelect = document.getElementById('resolution');
+        const morphBtn = document.getElementById('morphBtn');
+        const morphBtnText = document.getElementById('morphBtnText');
+        const resetBtn = document.getElementById('resetBtn');
+        const outputVideo = document.getElementById('outputVideo');
+        const statusMessage = document.getElementById('statusMessage');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const downloadLink = document.getElementById('downloadLink');
+        const browserWarning = document.getElementById('browserWarning');
+        
+        // State variables
+        let startImage = null;
+        let endImage = null;
+        let isProcessing = false;
+        
+        // Initialize the app
+        function init() {
+            console.log("App initialized");
+            
+            // Setup click handlers for upload boxes
+            startUpload.addEventListener('click', () => {
+                console.log("Start upload clicked");
+                startFileInput.click();
+            });
+            
+            endUpload.addEventListener('click', () => {
+                console.log("End upload clicked");
+                endFileInput.click();
+            });
+            
+            // Setup file input change handlers
+            startFileInput.addEventListener('change', (e) => {
+                console.log("Start file selected");
+                if (e.target.files.length) {
+                    loadImage(e.target.files[0], true);
+                }
+            });
+            
+            endFileInput.addEventListener('change', (e) => {
+                console.log("End file selected");
+                if (e.target.files.length) {
+                    loadImage(e.target.files[0], false);
+                }
+            });
+            
+            // Setup drag and drop for upload boxes
+            setupDragAndDrop(startUpload, (file) => {
+                console.log("Start image dropped");
+                loadImage(file, true);
+            });
+            
+            setupDragAndDrop(endUpload, (file) => {
+                console.log("End image dropped");
+                loadImage(file, false);
+            });
+            
+            // Setup morph button
+            morphBtn.addEventListener('click', generateMorphVideo);
+            
+            // Setup reset button
+            resetBtn.addEventListener('click', resetApp);
+            
+            // Check browser compatibility
+            checkBrowserCompatibility();
+            
+            // Initialize button state
+            updateMorphButtonState();
+            
+            showStatus('Ready to upload images! Click the boxes above to select images.', 'success');
+        }
+        
+        // Setup drag and drop
+        function setupDragAndDrop(dropZone, callback) {
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            // Highlight drop zone when dragging over
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropZone.style.backgroundColor = 'rgba(76, 201, 240, 0.2)';
+            }
+            
+            function unhighlight() {
+                dropZone.style.backgroundColor = '';
+            }
+            
+            // Handle drop
+            dropZone.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length) {
+                    const file = files[0];
+                    if (file.type.match('image.*')) {
+                        callback(file);
+                    } else {
+                        showStatus('Please upload an image file (JPG, PNG, or GIF)', 'error');
+                    }
+                }
+            }
+        }
+        
+        // Load image from file and display preview
+        function loadImage(file, isStartImage) {
+            console.log("Loading image:", file.name);
+            
+            if (!file.type.match('image.*')) {
+                showStatus('Please upload an image file (JPG, PNG, or GIF)', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    console.log("Image loaded successfully");
+                    if (isStartImage) {
+                        startImage = img;
+                        startPreview.src = e.target.result;
+                        startPreview.style.display = 'block';
+                        startPreviewSmall.src = e.target.result;
+                        startPreviewSmall.style.display = 'block';
+                    } else {
+                        endImage = img;
+                        endPreview.src = e.target.result;
+                        endPreview.style.display = 'block';
+                        endPreviewSmall.src = e.target.result;
+                        endPreviewSmall.style.display = 'block';
+                    }
+                    
+                    updateMorphButtonState();
+                    showStatus('Image loaded successfully!', 'success');
+                };
+                
+                img.onerror = function() {
+                    console.error("Error loading image");
+                    showStatus('Error loading image. Please try another file.', 'error');
+                };
+                
+                img.src = e.target.result;
+            };
+            
+            reader.onerror = function() {
+                console.error("Error reading file");
+                showStatus('Error reading file. Please try another image.', 'error');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+        
+        // Update morph button state
+        function updateMorphButtonState() {
+            if (startImage && endImage && !isProcessing) {
+                morphBtn.disabled = false;
+                console.log("Morph button enabled");
+            } else {
+                morphBtn.disabled = true;
+                console.log("Morph button disabled");
+            }
+        }
+        
+        // Show status message
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message';
+            statusMessage.classList.add(`status-${type}`);
+            statusMessage.style.display = 'block';
+            
+            console.log(`Status: ${type} - ${message}`);
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Check browser compatibility
+        function checkBrowserCompatibility() {
+            const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+            const isFirefox = typeof InstallTrigger !== 'undefined';
+            const isEdge = /Edg/.test(navigator.userAgent);
+            
+            if (!isChrome && !isFirefox && !isEdge) {
+                browserWarning.style.display = 'block';
+            }
+        }
+        
+        // Normalize images to the same square size
+        function normalizeImages(startImg, endImg, size) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas to square size
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Draw and resize start image
+            ctx.clearRect(0, 0, size, size);
+            ctx.drawImage(startImg, 0, 0, size, size);
+            const normalizedStart = ctx.getImageData(0, 0, size, size);
+            
+            // Draw and resize end image
+            ctx.clearRect(0, 0, size, size);
+            ctx.drawImage(endImg, 0, 0, size, size);
+            const normalizedEnd = ctx.getImageData(0, 0, size, size);
+            
+            return { normalizedStart, normalizedEnd, canvas, ctx };
+        }
+        
+        // Morph pixel data from start to end
+        function morphPixels(startData, endData, progress) {
+            const morphedData = new ImageData(startData.width, startData.height);
+            
+            for (let i = 0; i < startData.data.length; i += 4) {
+                // Calculate morphed pixel values
+                morphedData.data[i] = Math.round(startData.data[i] + (endData.data[i] - startData.data[i]) * progress);
+                morphedData.data[i+1] = Math.round(startData.data[i+1] + (endData.data[i+1] - startData.data[i+1]) * progress);
+                morphedData.data[i+2] = Math.round(startData.data[i+2] + (endData.data[i+2] - startData.data[i+2]) * progress);
+                morphedData.data[i+3] = Math.round(startData.data[i+3] + (endData.data[i+3] - startData.data[i+3]) * progress);
+            }
+            
+            return morphedData;
+        }
+        
+        // Get supported video MIME type
+        function getSupportedMimeType() {
+            const types = [
+                'video/webm;codecs=vp9',
+                'video/webm;codecs=vp8',
+                'video/webm',
+                'video/mp4;codecs=h264',
+                'video/mp4'
+            ];
+            
+            for (let type of types) {
+                if (MediaRecorder.isTypeSupported(type)) {
+                    return type;
+                }
+            }
+            
+            return 'video/webm';
+        }
+        
+        // Generate morphing video
+        async function generateMorphVideo() {
+            if (!startImage || !endImage || isProcessing) {
+                showStatus('Please upload both images first', 'error');
+                return;
+            }
+            
+            isProcessing = true;
+            morphBtn.disabled = true;
+            morphBtnText.textContent = 'Processing...';
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+            downloadLink.classList.add('hidden');
+            outputVideo.style.display = 'none';
+            
+            showStatus('Starting video generation...', 'processing');
+            
+            try {
+                const duration = parseFloat(durationInput.value) || 3;
+                const outputName = outputNameInput.value || 'morph.mp4';
+                const resolution = parseInt(resolutionSelect.value) || 512;
+                const fps = 30;
+                const totalFrames = Math.round(duration * fps);
+                
+                // Normalize images
+                showStatus('Normalizing images...', 'processing');
+                const { normalizedStart, normalizedEnd, canvas, ctx } = normalizeImages(startImage, endImage, resolution);
+                
+                // Get supported MIME type
+                const mimeType = getSupportedMimeType();
+                showStatus(`Creating video with ${mimeType}...`, 'processing');
+                
+                // Create a stream from the canvas
+                const stream = canvas.captureStream(fps);
+                const mediaRecorder = new MediaRecorder(stream, { mimeType });
+                
+                const chunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        chunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunks, { type: mimeType });
+                    const url = URL.createObjectURL(blob);
+                    
+                    outputVideo.src = url;
+                    outputVideo.style.display = 'block';
+                    
+                    // Create download link
+                    const extension = mimeType.includes('mp4') ? '.mp4' : '.webm';
+                    const downloadName = outputName.endsWith('.mp4') || outputName.endsWith('.webm') ? 
+                        outputName : outputName.split('.')[0] + extension;
+                    
+                    downloadLink.href = url;
+                    downloadLink.download = downloadName;
+                    downloadLink.textContent = `Download ${downloadName}`;
+                    downloadLink.classList.remove('hidden');
+                    
+                    showStatus(`Video created successfully! Duration: ${duration} seconds`, 'success');
+                    
+                    isProcessing = false;
+                    updateMorphButtonState();
+                    morphBtnText.textContent = 'Generate Morph Video';
+                    progressBar.style.display = 'none';
+                    
+                    // Stop all tracks
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                
+                mediaRecorder.onerror = (error) => {
+                    console.error('MediaRecorder error:', error);
+                    showStatus('Error recording video. Try using Chrome or Firefox.', 'error');
+                    isProcessing = false;
+                    updateMorphButtonState();
+                    morphBtnText.textContent = 'Generate Morph Video';
+                    progressBar.style.display = 'none';
+                };
+                
+                // Start recording
+                mediaRecorder.start();
+                
+                // Generate and record frames
+                for (let frame = 0; frame < totalFrames; frame++) {
+                    const progress = frame / (totalFrames - 1);
+                    
+                    // Morph and draw frame
+                    const morphedData = morphPixels(normalizedStart, normalizedEnd, progress);
+                    ctx.putImageData(morphedData, 0, 0);
+                    
+                    // Update progress bar
+                    progressFill.style.width = `${(frame / totalFrames) * 100}%`;
+                    
+                    // Small delay for smooth animation
+                    await new Promise(resolve => setTimeout(resolve, 1000 / fps));
+                }
+                
+                // Stop recording
+                setTimeout(() => {
+                    if (mediaRecorder.state !== 'inactive') {
+                        mediaRecorder.stop();
+                    }
+                }, 100);
+                
+            } catch (error) {
+                console.error('Error generating video:', error);
+                showStatus('Error: ' + error.message, 'error');
+                
+                isProcessing = false;
+                updateMorphButtonState();
+                morphBtnText.textContent = 'Generate Morph Video';
+                progressBar.style.display = 'none';
+            }
+        }
+        
+        // Reset the app
+        function resetApp() {
+            startImage = null;
+            endImage = null;
+            
+            startPreview.src = '';
+            startPreview.style.display = 'none';
+            startPreviewSmall.src = '';
+            startPreviewSmall.style.display = 'none';
+            
+            endPreview.src = '';
+            endPreview.style.display = 'none';
+            endPreviewSmall.src = '';
+            endPreviewSmall.style.display = 'none';
+            
+            startFileInput.value = '';
+            endFileInput.value = '';
+            
+            outputVideo.src = '';
+            outputVideo.style.display = 'none';
+            
+            durationInput.value = '3';
+            outputNameInput.value = 'morph.mp4';
+            resolutionSelect.value = '512';
+            
+            statusMessage.style.display = 'none';
+            progressBar.style.display = 'none';
+            downloadLink.classList.add('hidden');
+            
+            isProcessing = false;
+            updateMorphButtonState();
+            morphBtnText.textContent = 'Generate Morph Video';
+            
+            showStatus('App reset. Upload new images to begin.', 'success');
+        }
+        
+        // Start the app when page loads
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
