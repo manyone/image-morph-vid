@@ -18,7 +18,7 @@ A web-based application that creates smooth morphing animations between two imag
 ## 🚀 Live Demo
 
 You can access the live version of this app at:  
-[Your GitHub Pages URL here](https://manyone.github.io/image-morph-vid/)
+[https://manyone.github.io/image-morph-vid/](https://manyone.github.io/image-morph-vid/)
 
 ## 🛠️ How to Use
 
@@ -174,4 +174,5 @@ For questions, suggestions, or issues, please:
 ---
 
 **Enjoy creating amazing morphing animations!** 🎥✨
+
 
