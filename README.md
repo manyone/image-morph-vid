@@ -61,10 +61,7 @@ You can access the live version of this app at:
 image-morphing-app/
 ├── index.html          # Main application file
 ├── README.md           # This documentation
-├── LICENSE             # MIT License file
-└── assets/             # (Optional) Additional assets
-    ├── screenshots/
-    └── examples/
+└── LICENSE             # MIT License file
 ```
 
 ## 🌐 Deployment
@@ -174,5 +171,6 @@ For questions, suggestions, or issues, please:
 ---
 
 **Enjoy creating amazing morphing animations!** 🎥✨
+
 
 
